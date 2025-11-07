@@ -1,1 +1,170 @@
 
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مشغل القرآن الكريم</title>
+<style>
+  body {
+    font-family: "Cairo", sans-serif;
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    color: white;
+    text-align: center;
+    padding: 20px;
+  }
+  select, button {
+    margin: 10px;
+    padding: 10px;
+    font-size: 1em;
+    border-radius: 8px;
+  }
+  audio {
+    margin-top: 20px;
+    width: 90%;
+  }
+</style>
+</head>
+<body>
+  <h1>🎧 مشغل القرآن الكريم</h1>
+
+  <label>اختر القارئ:</label>
+  <select id="reciter">
+    <option value="https://server8.mp3quran.net/s_gmd/">سعد الغامدي</option>
+    <option value="https://server11.mp3quran.net/jhn/">عبد الله الجهني</option>
+    <option value="https://server14.mp3quran.net/yassin/">ياسين الجزائري</option>
+  </select>
+
+  <label>اختر السورة:</label>
+  <select id="surah">
+    <option value="001.mp3">الفاتحة</option>
+    <option value="002.mp3">البقرة</option>
+    <option value="003.mp3">آل عمران</option>
+    <option value="004.mp3">النساء</option>
+    <option value="005.mp3">المائدة</option>
+    <option value="006.mp3">الأنعام</option>
+    <option value="007.mp3">الأعراف</option>
+    <option value="008.mp3">الأنفال</option>
+    <option value="009.mp3">التوبة</option>
+    <option value="010.mp3">يونس</option>
+    <option value="011.mp3">هود</option>
+    <option value="012.mp3">يوسف</option>
+    <option value="013.mp3">الرعد</option>
+    <option value="014.mp3">إبراهيم</option>
+    <option value="015.mp3">الحجر</option>
+    <option value="016.mp3">النحل</option>
+    <option value="017.mp3">الإسراء</option>
+    <option value="018.mp3">الكهف</option>
+    <option value="019.mp3">مريم</option>
+    <option value="020.mp3">طه</option>
+    <option value="021.mp3">الأنبياء</option>
+    <option value="022.mp3">الحج</option>
+    <option value="023.mp3">المؤمنون</option>
+    <option value="024.mp3">النور</option>
+    <option value="025.mp3">الفرقان</option>
+    <option value="026.mp3">الشعراء</option>
+    <option value="027.mp3">النمل</option>
+    <option value="028.mp3">القصص</option>
+    <option value="029.mp3">العنكبوت</option>
+    <option value="030.mp3">الروم</option>
+    <option value="031.mp3">لقمان</option>
+    <option value="032.mp3">السجدة</option>
+    <option value="033.mp3">الأحزاب</option>
+    <option value="034.mp3">سبأ</option>
+    <option value="035.mp3">فاطر</option>
+    <option value="036.mp3">يس</option>
+    <option value="037.mp3">الصافات</option>
+    <option value="038.mp3">ص</option>
+    <option value="039.mp3">الزمر</option>
+    <option value="040.mp3">غافر</option>
+    <option value="041.mp3">فصلت</option>
+    <option value="042.mp3">الشورى</option>
+    <option value="043.mp3">الزخرف</option>
+    <option value="044.mp3">الدخان</option>
+    <option value="045.mp3">الجاثية</option>
+    <option value="046.mp3">الأحقاف</option>
+    <option value="047.mp3">محمد</option>
+    <option value="048.mp3">الفتح</option>
+    <option value="049.mp3">الحجرات</option>
+    <option value="050.mp3">ق</option>
+    <option value="051.mp3">الذاريات</option>
+    <option value="052.mp3">الطور</option>
+    <option value="053.mp3">النجم</option>
+    <option value="054.mp3">القمر</option>
+    <option value="055.mp3">الرحمن</option>
+    <option value="056.mp3">الواقعة</option>
+    <option value="057.mp3">الحديد</option>
+    <option value="058.mp3">المجادلة</option>
+    <option value="059.mp3">الحشر</option>
+    <option value="060.mp3">الممتحنة</option>
+    <option value="061.mp3">الصف</option>
+    <option value="062.mp3">الجمعة</option>
+    <option value="063.mp3">المنافقون</option>
+    <option value="064.mp3">التغابن</option>
+    <option value="065.mp3">الطلاق</option>
+    <option value="066.mp3">التحريم</option>
+    <option value="067.mp3">الملك</option>
+    <option value="068.mp3">القلم</option>
+    <option value="069.mp3">الحاقة</option>
+    <option value="070.mp3">المعارج</option>
+    <option value="071.mp3">نوح</option>
+    <option value="072.mp3">الجن</option>
+    <option value="073.mp3">المزمل</option>
+    <option value="074.mp3">المدثر</option>
+    <option value="075.mp3">القيامة</option>
+    <option value="076.mp3">الإنسان</option>
+    <option value="077.mp3">المرسلات</option>
+    <option value="078.mp3">النبأ</option>
+    <option value="079.mp3">النازعات</option>
+    <option value="080.mp3">عبس</option>
+    <option value="081.mp3">التكوير</option>
+    <option value="082.mp3">الانفطار</option>
+    <option value="083.mp3">المطففين</option>
+    <option value="084.mp3">الانشقاق</option>
+    <option value="085.mp3">البروج</option>
+    <option value="086.mp3">الطارق</option>
+    <option value="087.mp3">الأعلى</option>
+    <option value="088.mp3">الغاشية</option>
+    <option value="089.mp3">الفجر</option>
+    <option value="090.mp3">البلد</option>
+    <option value="091.mp3">الشمس</option>
+    <option value="092.mp3">الليل</option>
+    <option value="093.mp3">الضحى</option>
+    <option value="094.mp3">الشرح</option>
+    <option value="095.mp3">التين</option>
+    <option value="096.mp3">العلق</option>
+    <option value="097.mp3">القدر</option>
+    <option value="098.mp3">البينة</option>
+    <option value="099.mp3">الزلزلة</option>
+    <option value="100.mp3">العاديات</option>
+    <option value="101.mp3">القارعة</option>
+    <option value="102.mp3">التكاثر</option>
+    <option value="103.mp3">العصر</option>
+    <option value="104.mp3">الهمزة</option>
+    <option value="105.mp3">الفيل</option>
+    <option value="106.mp3">قريش</option>
+    <option value="107.mp3">الماعون</option>
+    <option value="108.mp3">الكوثر</option>
+    <option value="109.mp3">الكافرون</option>
+    <option value="110.mp3">النصر</option>
+    <option value="111.mp3">المسد</option>
+    <option value="112.mp3">الإخلاص</option>
+    <option value="113.mp3">الفلق</option>
+    <option value="114.mp3">الناس</option>
+  </select>
+
+  <br>
+  <button onclick="playSurah()">▶️ تشغيل</button>
+  <audio id="player" controls></audio>
+
+  <script>
+    function playSurah() {
+      const reciter = document.getElementById("reciter").value;
+      const surah = document.getElementById("surah").value;
+      const player = document.getElementById("player");
+      player.src = reciter + surah;
+      player.play();
+    }
+  </script>
+</body>
+</html>
