@@ -2,10 +2,10 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <title>اختبار تشغيل القرآن من mp3quran</title>
+  <title>تشغيل القرآن عبر Proxy</title>
 </head>
 <body style="text-align:center; font-family: Cairo;">
-  <h2>🎧 تجربة تشغيل سورة الفاتحة - العفاسي</h2>
+  <h2>🎧 تجربة سورة الفاتحة - مشاري راشد العفاسي</h2>
 
   <button onclick="playQuran()">تشغيل</button>
   <audio id="player" controls></audio>
@@ -13,8 +13,8 @@
   <script>
     function playQuran() {
       const player = document.getElementById('player');
-      // رابط مباشر مع Proxy لتجاوز قيود CORS
-      player.src = "https://api.allorigins.win/raw?url=" + 
+      // نستخدم corsproxy.io بدل allorigins
+      player.src = "https://corsproxy.io/?" + 
         encodeURIComponent("https://server13.mp3quran.net/alafasy/001.mp3");
       player.play();
     }
