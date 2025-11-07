@@ -1,23 +1,251 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <title>تشغيل القرآن عبر Proxy</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>مشغل القرآن — تجربة متعددة المصادر</title>
+  <style>
+    body { background:#0b1116; color:#e6eef3; font-family: "Cairo", sans-serif; padding:20px; text-align:center; }
+    .card { max-width:900px; margin:16px auto; background:linear-gradient(180deg,#071018,#0e2230); border-radius:12px; padding:22px; box-shadow:0 8px 30px rgba(0,0,0,0.6); }
+    h1{ color:#a6e1ff; margin-bottom:6px; }
+    p.small{ color:#b9ccd6; margin-top:0; margin-bottom:12px; }
+    select, button { padding:12px 16px; font-size:16px; border-radius:8px; border: none; margin:8px; }
+    select { background:#0b2a32; color:#e6eef3; }
+    button.play { background:#f0c34b; color:#062023; font-weight:700; min-width:180px; }
+    button.small { background:#12343f; color:#cfeff6; }
+    audio { width:90%; margin-top:18px; border-radius:12px; }
+    .log { text-align:left; max-height:160px; overflow:auto; margin-top:14px; background:rgba(255,255,255,0.03); padding:10px; border-radius:8px; color:#c7dfe6; font-size:13px; }
+    .row { display:flex; gap:8px; justify-content:center; flex-wrap:wrap; align-items:center; }
+    .note { color:#9fb8bf; font-size:13px; margin-top:8px; }
+    @media(max-width:600px){ .card{ padding:14px } audio{ width:100% } }
+  </style>
 </head>
-<body style="text-align:center; font-family: Cairo;">
-  <h2>🎧 تجربة سورة الفاتحة - مشاري راشد العفاسي</h2>
+<body>
+  <div class="card">
+    <h1>📖 مشغل القرآن (تجربة مصادر متعددة)</h1>
+    <p class="small">اختر القارئ والسورة — الصفحة ستحاول تلقائيًا عدة مصادر حتى تعمل.</p>
 
-  <button onclick="playQuran()">تشغيل</button>
-  <audio id="player" controls></audio>
+    <div class="row">
+      <label>القارىء:</label>
+      <select id="reciter">
+        <!-- أسماء المفتاحية المستخدمة في الروابط -->
+        <option value="s_gmd">سعد الغامدي (mp3quran)</option>
+        <option value="juhany">عبد الله الجهني (mp3quran)</option>
+        <option value="ar.alafasy">مشاري راشد العفاسي (cdn.islamic.network)</option>
+        <option value="ar.saad_alghamdi">سعد الغامدي (cdn.islamic.network)</option>
+        <option value="ar.mahermuaiqly">ماهر المعيقلي (cdn.islamic.network)</option>
+      </select>
 
-  <script>
-    function playQuran() {
-      const player = document.getElementById('player');
-      // نستخدم corsproxy.io بدل allorigins
-      player.src = "https://corsproxy.io/?" + 
-        encodeURIComponent("https://server13.mp3quran.net/alafasy/001.mp3");
-      player.play();
+      <label>السورة:</label>
+      <select id="surah"></select>
+      <button class="play" id="playBtn">تشغيل السورة ▶</button>
+    </div>
+
+    <audio id="player" controls></audio>
+
+    <div class="row" style="margin-top:12px;">
+      <button class="small" id="prevBtn">السابق</button>
+      <button class="small" id="nextBtn">التالي</button>
+      <button class="small" id="clearCacheBtn">مسح السجل</button>
+    </div>
+
+    <div class="note">ملاحظة: الصفحة تحاول روابط من مصادر متعددة (mp3quran servers و CDN). إن لم يعمل أحدها، سيجرّب التالي تلقائياً.</div>
+
+    <div class="log" id="log"></div>
+  </div>
+
+<script>
+/*
+  منطق التشغيل:
+  - قائمة سور 1..114 مرفقة مع الأسماء العربية
+  - عند الضغط تشغيل: نولد قائمة روابط مرشحة حسب القارئ:
+      - لو القارئ من mp3quran (مثال value = 's_gmd' أو 'juhany'):
+          نجرب روابط server8, server11, server13 بصيغة: https://server8.mp3quran.net/{reciter}/{NNN}.mp3
+          بعض السور في mp3quran تستخدم صفر بادئ 3 خانات (001..114)
+      - لو القارئ من cdn.islamic.network (value يبدأ بـ 'ar.'):
+          رابط بصيغة: https://cdn.islamic.network/quran/audio-surah/128/{reciter}/{num}.mp3
+  - نحاول كل رابط بالتسلسل: نضعه كـ audio.src ونستدعي load() ثم play(): 
+      - إن حدث error => نجرب الرابط التالي
+      - إن شغّل → يسجل في اللوغ ونبقي عليه
+*/
+
+const surahNames = [
+"الفاتحة","البقرة","آل عمران","النساء","المائدة","الأنعام","الأعراف","الأنفال","التوبة",
+"يونس","هود","يوسف","الرعد","إبراهيم","الحجر","النحل","الإسراء","الكهف","مريم","طه",
+"الأنبياء","الحج","المؤمنون","النور","الفرقان","الشعراء","النمل","القصص","العنكبوت","الروم",
+"لقمان","السجدة","الأحزاب","سبأ","فاطر","يس","الصافات","ص","الزمر","غافر","فصلت",
+"الشورى","الزخرف","الدخان","الجاثية","الأحقاف","محمد","الفتح","الحجرات","ق","الذاريات",
+"الطور","النجم","القمر","الرحمن","الواقعة","الحديد","المجادلة","الحشر","الممتحنة","الصف",
+"الجمعة","المنافقون","التغابن","الطلاق","التحريم","الملك","القلم","الحاقة","المعارج","نوح",
+"الجن","المزمل","المدثر","القيامة","الإنسان","المرسلات","النبأ","النازعات","عبس","التكوير",
+"الإنفطار","المطففين","الإنشقاق","البروج","الطارق","الأعلى","الغاشية","الفجر","البلد",
+"الشمس","الليل","الضحى","الشرح","التين","العلق","القدر","البينة","الزلزلة","العاديات",
+"القارعة","التكاثر","العصر","الهمزة","الفيل","قريش","الماعون","الكوثر","الكافرون","النصر",
+"المسد","الإخلاص","الفلق","الناس"
+];
+
+const surahSelect = document.getElementById('surah');
+for(let i=0;i<114;i++){
+  const num = (i+1).toString().padStart(3,'0'); // 001..114
+  const opt = document.createElement('option');
+  opt.value = num;
+  opt.textContent = `${num} — ${surahNames[i]}`;
+  surahSelect.appendChild(opt);
+}
+
+const reciterSelect = document.getElementById('reciter');
+const player = document.getElementById('player');
+const logBox = document.getElementById('log');
+const playBtn = document.getElementById('playBtn');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const clearCacheBtn = document.getElementById('clearCacheBtn');
+
+function log(msg){
+  const time = new Date().toLocaleTimeString();
+  logBox.innerHTML = `<div>• ${time} — ${msg}</div>` + logBox.innerHTML;
+}
+
+// قائمة سيرفرات mp3quran لمحاولة fallback
+const mp3Servers = [
+  'https://server8.mp3quran.net',
+  'https://server11.mp3quran.net',
+  'https://server6.mp3quran.net',
+  'https://server13.mp3quran.net',
+  'https://server7.mp3quran.net'
+];
+
+// دالة تبني لائحة روابط مرشحة لسورة وقارئ
+function buildCandidateUrls(reciterKey, surahNum){
+  const candidates = [];
+  // إذا القارئ قيمة تبدأ بـ "ar." نفترض مصدر cdn.islamic.network
+  if(reciterKey.startsWith('ar.')){
+    // cdn islamic network uses 1..114 (no zero padding in many paths or sometimes 1.mp3)
+    // but we'll keep 001..114 like earlier examples (some CDNs use 1.mp3 too)
+    // ندرج رابط 3 أشكال لزيادة فرص التشغيل
+    candidates.push(`https://cdn.islamic.network/quran/audio-surah/128/${reciterKey}/${parseInt(surahNum,10)}.mp3`);
+    candidates.push(`https://cdn.islamic.network/quran/audio-surah/128/${reciterKey}/${surahNum}.mp3`);
+    // نسخة احتياطية على mp3quran servers إن كان لديهم مجلدات بنفس اسم القارئ (نحتفظ بها لكن ترتيب لاحق)
+  } else {
+    // mp3quran style (reciterKey like s_gmd or juhany)
+    for(const server of mp3Servers){
+      candidates.push(`${server}/${reciterKey}/${surahNum}.mp3`);
+      // بعض السيرفرات تستعمل 1.mp3 بدلاً من 001.mp3 — نضيف محاولة
+      candidates.push(`${server}/${reciterKey}/${parseInt(surahNum,10)}.mp3`);
     }
-  </script>
-</body>
-</html>
+  }
+  // كقَدم احتياطي: نسجل روابط cdn.islamic.network لاسم القارئ كـ ar.NAME إذا كان موجود
+  if(!reciterKey.startsWith('ar.')){
+    // mapping لبعض الأسماء الشائعة في cdn (محاولة إضافية)
+    const mapping = {
+      's_gmd': 'ar.saad_alghamdi',
+      'juhany': 'ar.abdullah_al_juhany'
+    };
+    if(mapping[reciterKey]){
+      candidates.push(`https://cdn.islamic.network/quran/audio-surah/128/${mapping[reciterKey]}/${surahNum}.mp3`);
+      candidates.push(`https://cdn.islamic.network/quran/audio-surah/128/${mapping[reciterKey]}/${parseInt(surahNum,10)}.mp3`);
+    }
+  }
+  // إزالة التكرارات
+  return [...new Set(candidates)];
+}
+
+// دالة تحاول تشغيل من قائمة روابط واحدة تلو الأخرى
+async function tryPlayCandidates(candidates){
+  // نعيد مصدر ناجح أو null
+  for(const url of candidates){
+    log(`جرب رابط: ${url}`);
+    try{
+      // نحاول تحميل رأس الملف أولاً للتأكد (HEAD) لكن بعض السيرفرات لا تسمح HEAD -> نستخدم fetch مع mode:'no-cors' غير صالح هنا
+      // سنجرب مباشرة ضبط src وتشغيل، ونستمع لحدث error أو canplay
+      await attemptSetAndPlay(url);
+      log(`نجح التشغيل من: ${url}`);
+      return url;
+    } catch(e){
+      log(`فشل الرابط → ${url}`);
+      // نجرب التالي
+    }
+  }
+  return null;
+}
+
+// attemptSetAndPlay: يعيد Promise ينجح إذا بدأ التشغيل أو يرفض إذا فشل
+function attemptSetAndPlay(url){
+  return new Promise((resolve, reject) => {
+    let resolved = false;
+    // تنظيف الأحداث القديمة
+    player.pause();
+    player.removeAttribute('src');
+    player.load();
+
+    // مؤقت زمن لانتظار الاستجابة (مثلاً 10 ثواني)
+    const timeout = setTimeout(() => {
+      if(!resolved){
+        resolved = true;
+        player.pause();
+        player.removeAttribute('src');
+        player.load();
+        reject(new Error('timeout'));
+      }
+    }, 10000);
+
+    function onCanPlay(){
+      if(resolved) return;
+      resolved = true;
+      clearTimeout(timeout);
+      player.play().catch(()=>{}); // تشغيل إذا أمكن
+      cleanup();
+      resolve(true);
+    }
+    function onError(){
+      if(resolved) return;
+      resolved = true;
+      clearTimeout(timeout);
+      cleanup();
+      reject(new Error('audio error'));
+    }
+    function cleanup(){
+      player.removeEventListener('canplay', onCanPlay);
+      player.removeEventListener('error', onError);
+    }
+
+    player.addEventListener('canplay', onCanPlay);
+    player.addEventListener('error', onError);
+    // نضع المصدر ثم نحمّل
+    player.src = url;
+    player.load();
+  });
+}
+
+playBtn.addEventListener('click', async ()=>{
+  playBtn.disabled = true;
+  const reciter = reciterSelect.value;
+  const surah = surahSelect.value;
+  log(`بدء تشغيل السورة ${surah} للقارئ ${reciter} ...`);
+  const candidates = buildCandidateUrls(reciter, surah);
+  const success = await tryPlayCandidates(candidates);
+  if(success){
+    log(`تم التشغيل من: ${success}`);
+  } else {
+    log('لم نتمكن من إيجاد رابط صالح — جرّب قارئ أو شبكة أخرى.');
+    alert('لم نتمكن من إيجاد رابط صالح للسورة من المصادر الحالية. جرّب تغيير القارئ أو إعادة المحاولة لاحقًا.');
+  }
+  playBtn.disabled = false;
+});
+
+// أزرار السابق والتالي
+prevBtn.addEventListener('click', ()=> {
+  let i = parseInt(surahSelect.selectedIndex,10);
+  if(i>0){ surahSelect.selectedIndex = i-1; }
+});
+nextBtn.addEventListener('click', ()=> {
+  let i = parseInt(surahSelect.selectedIndex,10);
+  if(i < surahSelect.options.length-1){ surahSelect.selectedIndex = i+1; }
+});
+
+// مسح اللوغ
+clearCacheBtn.addEventListener('click', ()=> { logBox.innerHTML=''; });
+
+// يشغل تلقائياً إن تم تحميل ملف عبر رابط مباشر في الـ URL (اختياري)
+window.addEventListener('load', ()=>{
+  // اختيار افتراضي: سورة الفات
