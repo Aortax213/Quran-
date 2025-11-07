@@ -6,33 +6,33 @@
 <title>مشغل القرآن — احترافي</title>
 <style>
   :root{
-    --bg1:#07121a; --bg2:#072432; --card:#0b3450; --accent:#ffd166; --muted:#9fb3c4;
+    --bg1:#04121a; --bg2:#072735; --card:#0b2b3a; --accent:#ffd166; --muted:#9fb3c4;
   }
   *{box-sizing:border-box}
-  body{margin:0;font-family:"Cairo",sans-serif;background:linear-gradient(180deg,var(--bg1),var(--bg2));color:#fff;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:16px}
-  .app{width:100%;max-width:960px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:14px;padding:18px;box-shadow:0 10px 30px rgba(2,6,12,0.6)}
+  body{margin:0;font-family:"Cairo",sans-serif;background:linear-gradient(180deg,var(--bg1),var(--bg2));color:#fff;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:18px}
+  .app{width:100%;max-width:980px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:14px;padding:20px;box-shadow:0 10px 30px rgba(2,6,12,0.6)}
   header{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
-  .logo{width:64px;height:64px;border-radius:12px;background:linear-gradient(135deg,#08324a,#045a66);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--accent);font-size:18px}
+  .logo{width:64px;height:64px;border-radius:12px;background:linear-gradient(135deg,#08324a,#045a66);display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--accent);font-size:18px}
   h1{margin:0;font-size:20px}
   p.lead{margin:0;color:var(--muted);font-size:13px}
-  .controls{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+  .controls{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
   label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
   select,button{width:100%;padding:12px;border-radius:10px;border:0;font-size:15px}
-  select{background:rgba(0,0,0,0.2);color:#fff}
+  select{background:rgba(255,255,255,0.02);color:#fff}
   button.primary{background:var(--accent);color:#071217;font-weight:700;cursor:pointer}
-  .player{margin-top:14px;background:rgba(255,255,255,0.02);padding:14px;border-radius:12px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+  .player{margin-top:16px;background:rgba(255,255,255,0.02);padding:14px;border-radius:12px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
   .meta{flex:1;min-width:200px}
   .now{font-weight:700;font-size:16px}
   .sub{color:var(--muted);font-size:13px;margin-top:6px}
-  audio{width:100%;outline:none;margin-top:10px;border-radius:8px}
+  audio{width:100%;outline:none;margin-top:12px;border-radius:8px}
   .big-play{display:flex;gap:10px;align-items:center}
   .big-play button{padding:14px 20px;border-radius:12px;font-size:16px}
-  .pill{background:rgba(255,255,255,0.03);padding:8px;border-radius:8px}
+  .pill{background:rgba(255,255,255,0.02);padding:10px;border-radius:8px}
   .controls-row{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}
-  .small{font-size:13px;padding:8px 10px}
-  .log{margin-top:12px;background:#031523;padding:10px;border-radius:8px;color:#9fd0e6;font-size:13px;max-height:160px;overflow:auto}
-  footer{margin-top:10px;color:var(--muted);font-size:12px;text-align:center}
-  @media(max-width:640px){
+  .small{font-size:13px;padding:8px 10px;background:rgba(255,255,255,0.02);border-radius:8px;border:0;color:#fff}
+  .log{margin-top:12px;background:rgba(0,0,0,0.25);padding:10px;border-radius:8px;color:#9fd0e6;font-size:13px;max-height:180px;overflow:auto}
+  footer{margin-top:12px;color:var(--muted);font-size:12px;text-align:center}
+  @media(max-width:720px){
     .controls{grid-template-columns:1fr}
     h1{font-size:18px}
   }
@@ -44,7 +44,7 @@
       <div class="logo" aria-hidden="true">قُرآن</div>
       <div>
         <h1>مشغل القرآن — احترافي</h1>
-        <p class="lead">اختَر سورة وقارئ واضغط تشغيل — النظام يجرب مصدرًا مضمونًا ثم احتياطياً.</p>
+        <p class="lead">اختَر سورة وقارئ ثم اضغط تشغيل — يجرب مصدرًا مضمونًا ثم احتياطياً.</p>
       </div>
     </header>
 
@@ -67,7 +67,7 @@
         <div class="big-play">
           <button id="playBtn" class="primary">▶ تشغيل السورة</button>
           <div style="flex:1" class="pill">
-            <strong id="nowTitle">جاهز</strong>
+            <div class="now" id="nowTitle">جاهز</div>
             <div id="nowSub" class="sub">اختر سورة وقارئ ثم اضغط تشغيل</div>
           </div>
         </div>
@@ -86,12 +86,12 @@
     </div>
 
     <div class="log" id="logBox" aria-hidden="false">سجل التشغيل سيظهر هنا.</div>
-    <footer>إذا منع المتصفح التشغيل التلقائي: اضغط زر التشغيل داخل مشغّل الصوت.</footer>
+    <footer>إذا منع المتصفح التشغيل التلقائي: اضغط زر التشغيل داخل المشغل.</footer>
   </div>
 
 <script>
-/* احترافي: كل 114 سورة + 3 قرّاء + مصادر fallback
-   - يجرب أولاً cdn.islamic.network (CORS-friendly)
+/* احترافي: 114 سورة + 3 قرّاء + مصادر fallback
+   - يجرب cdn.islamic.network أولاً (CORS-friendly)
    - ثم mp3quran servers كاحتياط
    - أزرار سابق/التالي + autoplay للسورة التالية
 */
@@ -112,7 +112,6 @@ const surahNames = [
 "الكافرون","النصر","المسد","الإخلاص","الفلق","الناس"
 ];
 
-// reciter key -> cdn name + mp3quran path(s)
 const recitersMeta = {
   saad: {
     cdn: 'ar.saad_alghamdi',
@@ -150,34 +149,31 @@ surahNames.forEach((n,i)=>{
   surahSelect.appendChild(opt);
 });
 
-// logging helper
 function log(msg){
   const t = new Date().toLocaleTimeString();
   logBox.innerHTML = `<div>• ${t} — ${msg}</div>` + logBox.innerHTML;
 }
 
-// try sources in order and return first working URL or null
+// try candidates sequentially and return first working url or null
 async function findWorkingUrl(reciterKey, surahNum){
   const meta = recitersMeta[reciterKey];
   if(!meta) return null;
   const num3 = String(Number(surahNum)).padStart(3,'0');
 
-  // candidates: cdn.islamic.network, then mp3q servers
   const candidates = [];
   candidates.push(`https://cdn.islamic.network/quran/audio-surah/128/${meta.cdn}/${num3}.mp3`);
   for(const s of meta.mp3qServers) candidates.push(`${s}${num3}.mp3`);
 
-  log(`اختبار مصادر ${candidates.length} للرابط (سورة ${num3})`);
+  log(`اختبار ${candidates.length} مصدر للسورة ${num3}`);
   for(const url of candidates){
     log(`جرب: ${url}`);
-    // quick test: try load metadata by assigning src then wait for canplay or error
     audio.src = url;
     audio.load();
     const ok = await new Promise(resolve=>{
       let done=false;
       const onOk=()=>{ if(!done){ done=true; cleanup(); resolve(true); } };
       const onErr=()=>{ if(!done){ done=true; cleanup(); resolve(false); } };
-      const timer = setTimeout(()=>{ if(!done){ done=true; cleanup(); resolve(false); } },6000);
+      const timer = setTimeout(()=>{ if(!done){ done=true; cleanup(); resolve(false); } },7000);
       function cleanup(){
         audio.removeEventListener('canplay', onOk);
         audio.removeEventListener('canplaythrough', onOk);
@@ -203,11 +199,11 @@ async function playSelected(){
   const reciterKey = reciterSelect.value;
   nowTitle.textContent = `${String(Number(surah)).padStart(3,'0')} — ${surahNames[Number(surah)-1]}`;
   nowSub.textContent = `جارٍ البحث عن مصدر للقارئ ${reciterSelect.selectedOptions[0].text}...`;
-  log(`بدء تشغيل: سورة ${surah} — قارئ ${reciterKey}`);
+  log(`طلب تشغيل: سورة ${surah} — قارئ ${reciterSelect.selectedOptions[0].text}`);
 
   const url = await findWorkingUrl(reciterKey, surah);
   if(!url){
-    nowSub.textContent = 'لم نتمكن من إيجاد مصدر صالح. جرّب قارئًا آخر.';
+    nowSub.textContent = 'لم نتمكن من العثور على مصدر صالح. جرّب قارئًا آخر.';
     log('لم يتم العثور على رابط صالح.');
     return;
   }
@@ -217,7 +213,7 @@ async function playSelected(){
     nowSub.textContent = `المصدر: ${url}`;
     log('تم البدء بالتشغيل.');
   }catch(e){
-    nowSub.textContent = 'المتصفح منع التشغيل التلقائي — اضغط زر تشغيل داخل المشغّل.';
+    nowSub.textContent = 'المتصفح منع التشغيل التلقائي — اضغط زر داخل المشغل لتشغيل الصوت.';
     log('رابط صالح لكن المتصفح منع التشغيل التلقائي.');
   }
 }
@@ -253,12 +249,10 @@ audio.addEventListener('ended', ()=>{
   }
 });
 
-// keyboard: space to play/pause
 document.addEventListener('keydown',(e)=>{
   if(e.code === 'Space'){ e.preventDefault(); if(audio.paused) audio.play().catch(()=>{}); else audio.pause(); }
 });
 
-// initial log
 log('جاهز — اختر سورة وقارئ ثم اضغط تشغيل.');
 </script>
 </body>
